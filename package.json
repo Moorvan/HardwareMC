@@ -2,14 +2,15 @@
   "name": "hardware-mc",
   "productName": "HardwareMC",
   "version": "1.0.0",
-  "description": "A GUI too l for hardware formal verification.",
+  "description": "A GUI tool for hardware formal verification.",
   "main": "./dist/main.js",
   "build": {
     "appId": "dev.morvan.HardwareMC",
     "productName": "HardwareMC",
     "directories": {
       "output": "build"
-    }
+    },
+    "icon": "assets/images/logo.png"
   },
   "scripts": {
     "build": "tsc",

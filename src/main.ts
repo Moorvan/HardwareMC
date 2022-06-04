@@ -1,4 +1,4 @@
-import {app, BrowserWindow, Menu} from "electron";
+import {app, BrowserWindow, Menu, ipcMain} from "electron";
 import * as path from "path";
 import * as Electron from "electron";
 
@@ -17,7 +17,7 @@ function createWindow() {
     // mainWindow.loadURL("https://www.baidu.com")
     mainWindow.loadFile(path.join(__dirname, "../index.html"));
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     const isMac = process.platform === 'darwin'
     const menuTemp: Electron.MenuItemConstructorOptions[] = [
@@ -38,7 +38,17 @@ function createWindow() {
         {
             label: 'File',
             submenu: [
-                isMac ? {label: 'close'} : {label: 'quit'}
+                {
+                    label: 'Open',
+                    click: () => openFinder()
+                },
+                {
+                    label: 'Test',
+                    click: () => {
+                        console.log("hello")
+                        mainWindow.webContents.send('dog', 'hahaha')
+                    }
+                }
             ]
         }
     ]
@@ -46,6 +56,14 @@ function createWindow() {
     const menu = Menu.buildFromTemplate(menuTemp)
     Menu.setApplicationMenu(menu)
 
+    ipcMain.on('msg', (event, arg) => {
+        console.log("Received: " + arg)
+        event.returnValue
+    })
+}
+
+function openFinder() {
+    console.log("ddd")
 }
 
 // This method will be called when Electron has finished
