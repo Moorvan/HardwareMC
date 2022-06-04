@@ -1,6 +1,7 @@
-import {app, BrowserWindow} from "electron";
+import {app, BrowserWindow, Menu} from "electron";
 import * as path from "path";
-import * as shell from "shelljs";
+import * as Electron from "electron";
+
 
 function createWindow() {
     // Create the browser window.
@@ -17,6 +18,34 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, "../index.html"));
     // Open the DevTools.
     // mainWindow.webContents.openDevTools();
+
+    const isMac = process.platform === 'darwin'
+    const menuTemp: Electron.MenuItemConstructorOptions[] = [
+        // { role: 'appMenu' }
+        ...(isMac ? [{
+            label: app.name,
+            submenu: [
+                {role: 'about'},
+                {type: 'separator'},
+                {role: 'services'},
+                {type: 'separator'},
+                {role: 'hide'},
+                {role: 'hideOthers'},
+                {type: 'separator'},
+                {role: 'quit'}
+            ]
+        }] : []) as Electron.MenuItemConstructorOptions[],
+        {
+            label: 'File',
+            submenu: [
+                isMac ? {label: 'close'} : {label: 'quit'}
+            ]
+        }
+    ]
+
+    const menu = Menu.buildFromTemplate(menuTemp)
+    Menu.setApplicationMenu(menu)
+
 }
 
 // This method will be called when Electron has finished
@@ -31,7 +60,6 @@ app.on("ready", () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
 
-    console.log(__dirname);
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
