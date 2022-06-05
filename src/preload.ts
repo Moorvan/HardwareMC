@@ -1,52 +1,79 @@
 // All of the Node.js APIs are available in the preload process.
 // It has the same sandbox as a Chrome extension.
 
-import {clipboard, ipcRenderer, contextBridge} from "electron"
+import {ipcRenderer, contextBridge} from "electron"
+import {exec} from "child_process"
+import * as stream from "stream";
 
+export const binPath = "./deps/oss-cad-suite/bin/"
 export type ContextBridgeApi = {
     sendMsg: () => string
-    updateClipboard: () => void
+    filePath?: string
+    fileType?: string
+    canCheck?: boolean
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    const replaceText = (selector: string, text: string) => {
-        const element = document.getElementById(selector);
-        if (element) {
-            element.innerText = text;
-        }
-    };
-
-    for (const type of ["chrome", "node", "electron"]) {
-        replaceText(`${type}-version`, process.versions[type as keyof NodeJS.ProcessVersions]);
-    }
-
-    replaceText("clipboard", clipboard.readText())
-
-    const e = document.getElementById("update")
+    console.log("DOMContentLoaded")
+    const e = document.getElementById("pono -h")
     e.onclick = () => {
-        const i = document.getElementById("clipboard")
-        i.innerText = clipboard.readText()
+        exec(binPath + "pono -h", (err, stdout, stderr) => {
+            console.log(stdout)
+        })
     }
+    Array.from(
+        document.getElementsByClassName('check') as HTMLCollectionOf<HTMLElement>
+    ).forEach(e => {
+        e.style.display = 'none'
+    })
 
+    const submit = document.getElementById('submit')
+    submit.onclick = () => {
+        console.log("submit")
+        const algorithm = document.getElementById('algorithm') as HTMLInputElement
+        const step = document.getElementById('step') as HTMLInputElement
+        if (algorithm.value == '' || step.value == '') {
+            alert('Please input algorithm and step')
+            return
+        }
+        solve(algorithm.value, Number(step.value))
+    }
 });
+
+function solve(algorithm: string, step: number) {
+    if ((algorithm == 'ind' || algorithm == 'bmc') && step > 1 && step < 50) {
+        exec(binPath + 'pono -e ' + algorithm + ' -k ' + step + ' -v 1 ' + bridgeApi.filePath, (error, stdout, stderr) => {
+            console.log(stdout)
+        })
+    }
+}
 
 
 const bridgeApi: ContextBridgeApi = {
     sendMsg: () => {
         console.log(ipcRenderer.sendSync('msg', 'ping'))
         return "hello"
-    },
-    updateClipboard: () => {
-        const e = document.getElementById('clipboard')
-        if (e) {
-            e.innerText = clipboard.readText()
-        }
     }
 }
-
-
 contextBridge.exposeInMainWorld("api", bridgeApi)
-ipcRenderer.on("dog", (event, arg) => {
-    console.log("Received: " + arg)
-    document.getElementById('clipboard').innerText = arg
+
+ipcRenderer.on('open-file', (event, msg, msg1) => {
+    bridgeApi.filePath = msg.filePath
+    bridgeApi.fileType = msg.fileType
+    bridgeApi.canCheck = true
+
+    const filePath = document.getElementById('file-path')
+    if (filePath) {
+        filePath.innerText = msg.filePath
+    }
+    const fileType = document.getElementById('file-type')
+    if (fileType) {
+        fileType.innerText = msg.fileType
+    }
+
+    Array.from(
+        document.getElementsByClassName('check') as HTMLCollectionOf<HTMLElement>
+    ).forEach(e => {
+        e.style.display = 'block'
+    })
 })

@@ -1,31 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Hello World!</title>
-  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-  <meta
-          http-equiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self'"
-  />
-  <meta
-          http-equiv="X-Content-Security-Policy"
-          content="default-src 'self'; script-src 'self'"
-  />
+    <meta charset="UTF-8"/>
+    <title>HardwareMC</title>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'"
+    />
+    <meta
+            http-equiv="X-Content-Security-Policy"
+            content="default-src 'self'; script-src 'self'"
+    />
 </head>
 <body>
-<h1>Hello World!</h1>
-We are using Node.js <span id="node-version"></span>, Chromium
-<span id="chrome-version"></span>, and Electron
-<span id="electron-version"></span>. <br>
+<div>
+    <input id="pono -h" type="button" value="pono -h">
+    <h3>Checking File Massage</h3>
+    File Path:<br>
+    <span id="file-path"></span><br>
+    Type:<br>
+    <span id="file-type"></span>
+    <div class="check">
+        <h3>Checking Configuration</h3>
+        Algorithm:<br>
+        <select id="algorithm">
+            <option value="bmc">BMC</option>
+            <option value="ind">K-Induction</option>
+            <option value="pdr">PDR</option>
+        </select><br>
+        Step:<br>
+        <input id="step" type="number" min="1" max="50" step="1"><br>
+        <input id="submit" type="submit" value="Run Check">
+    </div>
+</div>
 
-<span id="clipboard"></span>
 
-<br>
-
-<input id="update" type="button" value="update">
-
-<!-- You can also require other files to run in this process -->
 <script src="./dist/renderer.js"></script>
 </body>
 </html>

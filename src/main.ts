@@ -1,4 +1,4 @@
-import {app, BrowserWindow, Menu, ipcMain} from "electron";
+import {app, BrowserWindow, Menu, ipcMain, dialog} from "electron";
 import * as path from "path";
 import * as Electron from "electron";
 
@@ -10,11 +10,9 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, "preload.js"),
         },
-        width: 800,
+        width: 800
     });
-
     // and load the index.html of the app.
-    // mainWindow.loadURL("https://www.baidu.com")
     mainWindow.loadFile(path.join(__dirname, "../index.html"));
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
@@ -40,13 +38,18 @@ function createWindow() {
             submenu: [
                 {
                     label: 'Open',
-                    click: () => openFinder()
+                    click: () => {
+                        const result = openFinder()
+                        if (result) {
+                            console.log(result)
+                            mainWindow.webContents.send('open-file', result)
+                        }
+                    }
                 },
                 {
                     label: 'Test',
                     click: () => {
                         console.log("hello")
-                        mainWindow.webContents.send('dog', 'hahaha')
                     }
                 }
             ]
@@ -75,7 +78,23 @@ function createWindow() {
 }
 
 function openFinder() {
-    console.log("ddd")
+    const files = dialog.showOpenDialogSync({
+        title: 'Select a btor2 file',
+        properties: ['openFile'],
+        filters: [
+            {name: 'btor2', extensions: ['btor2', 'btor']},
+            {name: 'SystemVerilog', extensions: ['sv']}
+        ]
+    })
+    if (files && files.length > 0) {
+        console.log(files[0])
+        const file = files[0]
+        if (file.endsWith('.btor2') || file.endsWith('.btor')) {
+            return {filePath: file, fileType: 'btor2'}
+        } else if (file.endsWith('sv')) {
+            return {filePath: file, fileType: 'sv'}
+        }
+    }
 }
 
 // This method will be called when Electron has finished
