@@ -7,6 +7,7 @@
 
 
 function f() {
-    console.log(window.api.sendMsg())
+    window.api.sendMsg()
 }
+
 

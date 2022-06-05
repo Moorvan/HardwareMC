@@ -50,6 +50,18 @@ function createWindow() {
                     }
                 }
             ]
+        },
+        {
+            label: 'Developer',
+            submenu: [
+                {
+                    label: 'Toggle DevTools',
+                    accelerator: 'Alt+CmdOrCtrl+I',
+                    click: () => {
+                        mainWindow.webContents.toggleDevTools()
+                    }
+                }
+            ]
         }
     ]
 
@@ -58,7 +70,7 @@ function createWindow() {
 
     ipcMain.on('msg', (event, arg) => {
         console.log("Received: " + arg)
-        event.returnValue
+        event.returnValue = "pong"
     })
 }
 

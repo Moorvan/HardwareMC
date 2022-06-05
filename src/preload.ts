@@ -5,6 +5,7 @@ import {clipboard, ipcRenderer, contextBridge} from "electron"
 
 export type ContextBridgeApi = {
     sendMsg: () => string
+    updateClipboard: () => void
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -21,18 +22,30 @@ window.addEventListener("DOMContentLoaded", () => {
 
     replaceText("clipboard", clipboard.readText())
 
+    const e = document.getElementById("update")
+    e.onclick = () => {
+        const i = document.getElementById("clipboard")
+        i.innerText = clipboard.readText()
+    }
+
 });
 
 
-const sendMsgApi: ContextBridgeApi = {
+const bridgeApi: ContextBridgeApi = {
     sendMsg: () => {
-        console.log("sendMsg")
-        ipcRenderer.sendSync("msg")
+        console.log(ipcRenderer.sendSync('msg', 'ping'))
         return "hello"
+    },
+    updateClipboard: () => {
+        const e = document.getElementById('clipboard')
+        if (e) {
+            e.innerText = clipboard.readText()
+        }
     }
 }
 
-contextBridge.exposeInMainWorld("api", sendMsgApi)
+
+contextBridge.exposeInMainWorld("api", bridgeApi)
 ipcRenderer.on("dog", (event, arg) => {
     console.log("Received: " + arg)
     document.getElementById('clipboard').innerText = arg
