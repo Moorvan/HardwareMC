@@ -1,6 +1,7 @@
 import {app, BrowserWindow, Menu, ipcMain, dialog} from "electron";
 import * as path from "path";
 import * as Electron from "electron";
+import * as isDev from "electron-is-dev";
 
 
 function createMainWindow() {
@@ -44,12 +45,6 @@ function createMainWindow() {
                             mainWindow.webContents.send('open-file', result)
                         }
                     }
-                },
-                {
-                    label: 'Test',
-                    click: () => {
-                        console.log("hello")
-                    }
                 }
             ]
         },
@@ -69,6 +64,7 @@ function createMainWindow() {
 
     const menu = Menu.buildFromTemplate(menuTemp)
     Menu.setApplicationMenu(menu)
+    mainWindow.webContents.send('is-dev', isDev)
 
     ipcMain.on('msg', (event, arg) => {
         console.log("Received: " + arg)

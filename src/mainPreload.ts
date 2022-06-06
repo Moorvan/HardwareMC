@@ -4,7 +4,11 @@
 import {ipcRenderer, contextBridge} from "electron"
 import {exec} from "child_process"
 
-export const binPath = "./deps/oss-cad-suite/bin/"
+let binPath: string
+ipcRenderer.on('is-dev', (event, msg) => {
+    const isDev = msg as boolean
+    binPath = isDev ? "deps/oss-cad-suite/bin/" : process.resourcesPath + "/deps/oss-cad-suite/bin/"
+})
 export type ContextBridgeApi = {
     sendMsg: () => string
     filePath?: string
@@ -16,8 +20,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const e = document.getElementById("pono -h")
     e.onclick = () => {
         exec(binPath + "pono -h", (err, stdout, stderr) => {
+            console.log(stderr)
             console.log(stdout)
         })
+    }
+    document.getElementById('bin-path').onclick = () => {
+        console.log(binPath)
     }
     Array.from(
         document.getElementsByClassName('check') as HTMLCollectionOf<HTMLElement>
@@ -41,6 +49,8 @@ window.addEventListener("DOMContentLoaded", () => {
 function solve(algorithm: string, step: number) {
     if ((algorithm == 'ind' || algorithm == 'bmc') && step > 1 && step < 50) {
         exec(binPath + 'pono -e ' + algorithm + ' -k ' + step + ' -v 1 ' + bridgeApi.filePath, (error, stdout, stderr) => {
+            console.log(error)
+            console.log(stderr)
             console.log(stdout)
             ipcRenderer.send('show-result', stdout)
         })
@@ -76,3 +86,4 @@ ipcRenderer.on('open-file', (event, msg, msg1) => {
         e.style.display = 'block'
     })
 })
+

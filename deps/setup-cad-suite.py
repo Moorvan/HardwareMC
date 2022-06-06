@@ -25,6 +25,13 @@ def main():
     t = tarfile.open(name + '.tgz')
     t.extractall()
     os.remove(name + '.tgz')
+    os.remove('./oss-cad-suite/environment')
+    os.rmdir('./oss-cad-suite/etc')
+    os.rmdir('./oss-cad-suite/examples')
+    os.rmdir('./oss-cad-suite/Frameworks')
+    os.rmdir('./oss-cad-suite/py3bin')
+    os.rmdir('./oss-cad-suite/share')
+    os.rmdir('./oss-cad-suite/lib/python3.8')
 
 
 if __name__ == '__main__':
