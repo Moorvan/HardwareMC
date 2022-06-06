@@ -1,6 +1,6 @@
 export {}
 
-import {ContextBridgeApi} from "../preload";
+import {ContextBridgeApi} from "../mainPreload";
 
 
 declare global {

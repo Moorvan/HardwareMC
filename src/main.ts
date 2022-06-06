@@ -3,23 +3,22 @@ import * as path from "path";
 import * as Electron from "electron";
 
 
-function createWindow() {
+function createMainWindow() {
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         height: 600,
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "mainPreload.js"),
         },
         width: 800
     });
     // and load the index.html of the app.
-    mainWindow.loadFile(path.join(__dirname, "../index.html"));
+    mainWindow.loadFile(path.join(__dirname, "../html/index.html"));
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     const isMac = process.platform === 'darwin'
     const menuTemp: Electron.MenuItemConstructorOptions[] = [
-        // { role: 'appMenu' }
         ...(isMac ? [{
             label: app.name,
             submenu: [
@@ -77,6 +76,18 @@ function createWindow() {
     })
 }
 
+function createResultWindow(result: string) {
+    const resultWindow = new BrowserWindow({
+        height: 400,
+        width: 300,
+        webPreferences: {
+            preload: path.join(__dirname, "resultPreload.js"),
+        }
+    })
+    resultWindow.loadFile(path.join(__dirname, "../html/result.html"))
+    resultWindow.webContents.send('result', result)
+}
+
 function openFinder() {
     const files = dialog.showOpenDialogSync({
         title: 'Select a btor2 file',
@@ -97,16 +108,20 @@ function openFinder() {
     }
 }
 
+ipcMain.on('show-result', (event, arg) => {
+    createResultWindow(arg)
+})
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on("ready", () => {
-    createWindow();
+    createMainWindow();
 
     app.on("activate", function () {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
-        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+        if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
     });
 
 });

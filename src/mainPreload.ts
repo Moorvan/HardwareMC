@@ -3,7 +3,6 @@
 
 import {ipcRenderer, contextBridge} from "electron"
 import {exec} from "child_process"
-import * as stream from "stream";
 
 export const binPath = "./deps/oss-cad-suite/bin/"
 export type ContextBridgeApi = {
@@ -14,7 +13,6 @@ export type ContextBridgeApi = {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-    console.log("DOMContentLoaded")
     const e = document.getElementById("pono -h")
     e.onclick = () => {
         exec(binPath + "pono -h", (err, stdout, stderr) => {
@@ -44,6 +42,7 @@ function solve(algorithm: string, step: number) {
     if ((algorithm == 'ind' || algorithm == 'bmc') && step > 1 && step < 50) {
         exec(binPath + 'pono -e ' + algorithm + ' -k ' + step + ' -v 1 ' + bridgeApi.filePath, (error, stdout, stderr) => {
             console.log(stdout)
+            ipcRenderer.send('show-result', stdout)
         })
     }
 }

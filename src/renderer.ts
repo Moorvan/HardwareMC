@@ -10,9 +10,5 @@ function f() {
     window.api.sendMsg()
 }
 
-function submit() {
-    console.log('submit!')
-}
-
 
 
